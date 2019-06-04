@@ -9,6 +9,7 @@ import org.apache.commons.csv.CSVRecord;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import redis.clients.jedis.Jedis;
+import service.QRTradeDataService;
 import utilities.FileUtility;
 import utilities.JedisUtility;
 import utilities.SingleAppUtility;
@@ -71,6 +72,34 @@ public class TradeDataSplitApplication {
                     continue;
                 }
 
+                //update record to the database
+                String lineId = null;
+                String busId = null;
+                String posId = null;
+                try {
+                    //线路编号
+                    lineId = record.get("line_id");
+                    //车辆编号
+                    busId = record.get("bus_id");
+                    //POS机编号
+                    posId = record.get("pos_id");
+                    //csv中只要有记录就将交易的状态更新为1，代表已回传，0 代表未回传，数据库中该字段的默认值应为0
+                    int affectedRows = QRTradeDataService.updateTradeData(lineId , busId ,posId , filePathName , (short)1);
+
+                    if(affectedRows != 1){
+                        logger.error("Trade data updated affectedRows=" + affectedRows + " ,filePathName=" + filePathName + ",lineId=" + lineId + ",busId=" + busId + ",posId=" + posId);
+                    }
+                } catch (Exception e) {
+                    logger.error("Update trade data fail." , e);
+                }
+
+                //将csv Record 中的tradeData插入到数据库的fz_csv表中
+                int affectedRows = QRTradeDataService.insertTradeDate(record);
+                if(affectedRows != 1){
+                    logger.error("Trade data insert affectedRows=" + affectedRows + " ,filePathName=" + filePathName + ",lineId=" + lineId + ",busId=" + busId + ",posId=" + posId);
+                }
+
+
                byte[] datRecord = DataConverter.convertToDATFormat(record , counter);
                 if(datRecord == null){ //convert fail
                     jedis.hincrBy(contextRedisKey , Constant.CONTEXT_ERROR_LINE_COUNT , 1);
@@ -121,9 +150,12 @@ public class TradeDataSplitApplication {
             jedis.del(dataOutlineRedisKey);
 
             //clear csv file
+            //todo mv csv to other dir
             FileUtility.clean(mappedBuffer);
-            if(tradeDataFile.delete() == false){
-                logger.warn("Delete file " + tradeDataFile.getAbsolutePath() + " fail.");
+            File renameToFile = new File(ContextConfig.TRADE_DATA_BACKUP_DIR + tradeDataFile.getName());
+            if(tradeDataFile.renameTo(renameToFile) == false)
+            {
+                logger.error("Move file " + tradeDataFile.getAbsolutePath() + " to " + renameToFile.getAbsolutePath() + " fail.");
             }
         }
 

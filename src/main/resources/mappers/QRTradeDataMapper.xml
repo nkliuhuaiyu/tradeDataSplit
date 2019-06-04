@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="dao.QRTradeDataDao">
+
+    <update id="updateTradeData" parameterType="Map">
+        update T_BUS_QR_TRADE set file_name = #{fileName} , status = #{status} where line_id = #{lineId} and bus_id = #{busId} and pos_id = #{posId};
+    </update>
+
+    <insert id="backupTradeData" parameterType="pojo.QRTradeDataDO">
+        INSERT INTO public.fz_csv(
+        trade_number, line_direction, balance_date, card_no, station_id, trade_type, segmentation_flag, pos_id, line_id, bus_id, trade_date, ud_sn, trade_amount, original_amount, driver_card_no, attendant_card_no, raw_data, user_id, pay_state, pay_type, update_time, transaction_id, card_issuer_id, qrcreatorcode, line_name, shift_id)
+        VALUES (#{tradeNumber}, #{lineDirection}, #{balanceDate}, #{cardNo}, #{stationId}, #{tradeType}, #{segmentationFlag}, #{posId}, #{lineId}, #{busId}, #{tradeDate}, #{udSn}, #{tradeAmount}, #{originalAmount}, #{driverCardNo}, #{attendantCardNo}, #{rawData}, #{userId}, #{payState}, #{payType}, #{updateTime}, #{transactionId}, #{cardIssuerId}, #{qrcreatorcode}, #{lineName}, #{shiftId});
+    </insert>
+</mapper>

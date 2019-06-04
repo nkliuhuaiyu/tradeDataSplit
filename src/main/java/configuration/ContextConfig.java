@@ -10,6 +10,7 @@ public class ContextConfig {
     private static Logger logger = LogManager.getLogger(ContextConfig.class);
 
     public static String TRADE_DATA_DIR;
+    public static String TRADE_DATA_BACKUP_DIR;
     public static String SPLIT_DATA_DIR;
     public static String CONTEXT_FILE_NAME_SUFFIX;
     public static String CONTEXT_TXT_DIR;
@@ -25,6 +26,7 @@ public class ContextConfig {
             properties.load(inputStream);
 
             TRADE_DATA_DIR = properties.getProperty("tradeData.csv.dir");
+            TRADE_DATA_BACKUP_DIR = properties.getProperty("tradeData.csv.backup.dir");
             SPLIT_DATA_DIR = properties.getProperty("splitData.dat.dir");
             CONTEXT_FILE_NAME_SUFFIX = properties.getProperty("contextFile.name.suffix");
             CONTEXT_TXT_DIR = properties.getProperty("context.txt.dir");
