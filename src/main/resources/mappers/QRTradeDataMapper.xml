@@ -4,7 +4,7 @@
 <mapper namespace="dao.QRTradeDataDao">
 
     <update id="updateTradeData" parameterType="Map">
-        update T_BUS_QR_TRADE set file_name = #{fileName} , status = #{status} where line_id = #{lineId} and bus_id = #{busId} and pos_id = #{posId};
+        update T_BUS_QR_TRADE set file_name = #{fileName} , status = #{status} where card_no = #{cardNo} and bus_id = #{busId} and trade_date = #{tradeDate};
     </update>
 
     <insert id="backupTradeData" parameterType="pojo.QRTradeDataDO">

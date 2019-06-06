@@ -15,14 +15,15 @@ public class QRTradeDataService {
 
     public static Logger logger = LogManager.getLogger(QRTradeDataService.class);
 
-    public static int updateTradeData(String lineId , String busId , String posId , String fileName , short status){
+    public static int updateTradeData(String cardNo , String busId , String tradeDate , String fileName , short status){
+        logger.debug("+++filename:{}" , fileName);
         SqlSession sqlSession = DBManager.sqlSessionFactory.openSession();
         try{
             QRTradeDataDao qRTradeDataDao = sqlSession.getMapper(QRTradeDataDao.class);
             Map<String , Object> params = new HashMap<String, Object>();
-            params.put("lineId" , lineId);
+            params.put("cardNo" , cardNo);
             params.put("busId" , busId);
-            params.put("posId" , posId);
+            params.put("tradeDate" , tradeDate);
             params.put("fileName" , fileName);
             params.put("status" , status);
             int affectedRows = qRTradeDataDao.updateTradeData(params);
